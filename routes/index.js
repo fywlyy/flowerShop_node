@@ -9,4 +9,9 @@ router.get('/', function(req, res, next) {
 	res.render('index',{title: 'express+mongodb'});
 });
 
+router.post('/weixin',function(req, res, next){
+	// let { name, phoneNum } = req.body;
+	console.log(req.body);	
+})
+
 module.exports = router;

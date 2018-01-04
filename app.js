@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var ejs = require('ejs');
+var config = require('./config/config.json');
+var utils = require('./common/utils');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -26,8 +28,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
+app.use(utils.sign(config));
 app.use('/users', users);
-app.use('/weixin', wechat);
+// app.use('/weixin', wechat);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
