@@ -1,13 +1,18 @@
 var utils = {};  
-var sha1 = require('sha1');  
+var sha1 = require('sha1');
+var chalk = require('chalk');
+var request = require('request');
+var db = require('../mongodb/db.js'); 
+
+let collection = db.collection("access_token"); 
   
 //检查微信签名认证中间件  
 utils.sign = function (config){  
     return function(req, res, next){  
         config = config || {};  
         var q = req.query;  
-      var token = config.wechat.token;  
-      var signature = q.signature; //微信加密签名  
+        var token = config.wechat.token;  
+        var signature = q.signature; //微信加密签名  
         var nonce = q.nonce; //随机数  
         var timestamp = q.timestamp; //时间戳  
         var echostr = q.echostr; //随机字符串  
@@ -33,6 +38,65 @@ utils.sign = function (config){
             next();  
         }  
     }  
-};  
+}; 
+
+/**  
+ * 添加string类型的数据  
+ * @param key 键  
+ * @params value 值    
+ */    
+utils.set = function(key, value){    
+  
+    return new Promise(function(resolve, reject){
+
+    collection.insert({key: key,value: value},function(err,result){
+        if (err) {    
+            console.log(err);    
+            reject(err);    
+            return;    
+        }    
+        db.close();
+        resolve(result);
+    })    
+
+  })   
+}; 
+
+/**  
+ * 查询string类型的数据  
+ * @param key 键  
+ */    
+utils.get = function(key){    
+  
+    return new Promise(function(resolve, reject){  
+
+        collection.find({key: key},{value:1}).toArray((err,result) => {
+
+            if (err) {    
+                console.log(err);    
+                reject(err);    
+                return;    
+            }    
+            db.close();
+            resolve(result[0]);
+        })   
+  })   
+};
+
+//Promise化request  
+utils.request = function(opts){  
+    opts = opts || {};  
+    return new Promise(function(resolve, reject){  
+        request(opts,function(error, response, body){  
+  
+            if (error) {  
+                return reject(error);  
+            }  
+            resolve(body);  
+        })  
+          
+    })  
+  
+};
   
 module.exports = utils; 

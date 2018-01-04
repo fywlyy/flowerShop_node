@@ -10,7 +10,7 @@ var utils = require('./common/utils');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var wechat =require('./routes/wechat');
+var wechat = require('./routes/wechat');
 
 var app = express();
 
@@ -27,10 +27,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use(utils.sign(config));
+app.use('/index', index);
+// app.use(utils.sign(config));
 app.use('/users', users);
-// app.use('/weixin', wechat);
+app.use('/wechat', wechat);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
